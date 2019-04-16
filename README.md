@@ -1,3 +1,61 @@
+# My Own version of jamesiarmes php-ews
+
+I have taken Jamesiarmes php-ews and created a couple classes to help simplify creating, deleteing, and sending messages
+via exchange.
+
+## Inital Setup
+Please make sure to update the server, username and password in the ExchangeMaster.php file in the src directory
+```php
+private $mailServer = "change_me";
+protected $fromUsername = "change_me";
+private $fromPassword = "change_me";
+protected $temp_dir = '/path/to/temp/dir/to/save/attachments/';
+```
+
+## Examples
+
+### Send Email
+```php
+$Exchage = new Mailbox();
+
+//Create the Message
+$Message = $Exchange->createMessage();
+
+$Message->addReceipent("john.smith@js.com", "John Smith");
+$Message->setSubject("Hello John Smith");
+$Message->setBody("You have an awsome body!");
+$Message->addCcReceipent("jane.smith@js.com", "Jane Smith");
+$Message->addAttachment("/Users/joe/Documents/bod.jpg");
+
+//Send the email
+$Exchange->sendMessage($Message);
+
+```
+
+### Get Inbox
+```php
+$Exchange = new Mailbox();
+//Set the Date range to be 4/1/2019 through 4/2/2019
+$Exchange->changeDateRange(new DateTime("4/1/2019 00:00:00"), new DateTime("4/2/2019 11:59:59"));
+//Only get Unread Messages
+$Exchange->showUnreadOnly(true);
+//Get messages
+$Exchange->getMailbox();
+foreach($Exchange->messages as $Message) {
+  //Use $Message getters to display ... ie: $Message->getFrom()->EmailAddress
+  
+  /*
+    Seperate call to get the attachments for the message. Saves time and cleanup for 
+    unwanted attachments
+  */
+  $Exchange->getAttachments($Message);
+  $Message->getAttachments() //Will return array of attachments
+}
+
+```
+
+
+
 # PHP Exchange Web Services
 
 The PHP Exchange Web Services library (php-ews) is intended to make
