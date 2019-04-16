@@ -5,15 +5,17 @@
     {
        public $id = null;
        
+       public $change_key = null;
+       
        public $subject = "";
        
        public $body = "";
     
         /**
-         * @var \jamesiarmes\PhpEws\Type\EmailAddressType
+         * @var \jamesiarmes\PhpEws\Type\EmailAddressType[]
          * @since version
          */
-       public $to = "";
+       public $to = array();
     
         /**
          * @var \jamesiarmes\PhpEws\Type\EmailAddressType
@@ -21,9 +23,9 @@
          */
        public $from = "";
        
-       public $cc = "";
+       public $cc = array();
        
-       public $bcc = "";
+       public $bcc = array();
        
        public $priority = 0;
        
@@ -50,6 +52,24 @@
         }
     
         /**
+         * @return null
+         */
+        public function getChangeKey()
+        {
+            return $this->change_key;
+        }
+    
+        /**
+         * @param null $change_key
+         */
+        public function setChangeKey($change_key): void
+        {
+            $this->change_key = $change_key;
+        }
+        
+        
+    
+        /**
          * @return string
          */
         public function getSubject(): string
@@ -66,19 +86,60 @@
         }
     
         /**
-         * @return \jamesiarmes\PhpEws\Type\EmailAddressType
+         * @return \jamesiarmes\PhpEws\Type\EmailAddressType[]
          */
-        public function getTo(): \jamesiarmes\PhpEws\Type\EmailAddressType
+        public function getTo()
         {
             return $this->to;
         }
     
         /**
-         * @param \jamesiarmes\PhpEws\Type\EmailAddressType $to
+         * @param \jamesiarmes\PhpEws\Type\EmailAddressType[] $to
+         *
+         * @throws Exception
          */
-        public function setTo(\jamesiarmes\PhpEws\Type\EmailAddressType $to): void
+        public function setTo($to): void
         {
-            $this->to = $to;
+            if(is_array($to)) {
+                foreach ($to as $t) {
+                    if ($t instanceof \jamesiarmes\PhpEws\Type\EmailAddressType) {
+                        $this->to[] = $t;
+                    } else {
+                        throw new Exception("Could not set \"To\". Must be an array of EmailAddressType.");
+                    }
+                }
+            }
+            else {
+                throw new Exception("setTo must be an array of EmailAddressType");
+            }
+        }
+    
+        /**
+         * @param string|array $email
+         * @param null|string  $name
+         *
+         * @throws Exception
+         */
+        public function addRecipient($email, $name = null) {
+            if($email instanceof \jamesiarmes\PhpEws\Type\EmailAddressType)
+                $this->to[] = $email;
+            elseif(is_string($email)) {
+                $To = new \jamesiarmes\PhpEws\Type\EmailAddressType();
+                $To->EmailAddress = $email;
+                $To->Name = ($name) ? $name : "";
+                $this->to[] = $To;
+            }
+            elseif (is_array($email)) {
+                foreach ($email as $e) {
+                    $To = new \jamesiarmes\PhpEws\Type\EmailAddressType();
+                    $To->EmailAddress = $e[0];
+                    $To->Name = ($e[1]) ? $e[1] : "";
+                    $this->to[] = $To;
+                }
+            }
+            else {
+                throw new Exception("AddBccRecipient must be instance of EmailAddressType, string emailAddress, or array of email address (array(email, name))");
+            }
         }
     
         /**
@@ -98,35 +159,117 @@
         }
     
         /**
-         * @return string
+         * @return array
          */
-        public function getCc(): string
+        public function getCc(): array
         {
             return $this->cc;
         }
     
         /**
-         * @param string $cc
+         * @param array $cc
+         *
+         * @throws Exception
          */
-        public function setCc(?string $cc): void
+        public function setCc(array $cc): void
         {
-            $this->cc = $cc;
+            if(is_array($cc)) {
+                foreach ($cc as $t) {
+                    if ($t instanceof \jamesiarmes\PhpEws\Type\EmailAddressType) {
+                        $this->cc[] = $t;
+                    } else {
+                        throw new Exception("Could not set \"CC\". Must be an array of EmailAddressType.");
+                    }
+                }
+            }
+            else {
+                throw new Exception("setCc must be an array of EmailAddressType");
+            }
         }
     
         /**
-         * @return string
+         * @param string|array|\jamesiarmes\PhpEws\Type\EmailAddressType $email
+         * @param null|string                                            $name
+         *
+         * @throws Exception
          */
-        public function getBcc(): string
+        public function addCcRecipient($email, $name = null) {
+            if($email instanceof \jamesiarmes\PhpEws\Type\EmailAddressType)
+                $this->cc[] = $email;
+            elseif(is_string($email)) {
+                $To = new \jamesiarmes\PhpEws\Type\EmailAddressType();
+                $To->EmailAddress = $email;
+                $To->Name = ($name) ? $name : "";
+                $this->cc[] = $To;
+            }
+            elseif (is_array($email)) {
+                foreach ($email as $e) {
+                    $To = new \jamesiarmes\PhpEws\Type\EmailAddressType();
+                    $To->EmailAddress = $e[0];
+                    $To->Name = ($e[1]) ? $e[1] : "";
+                    $this->cc[] = $To;
+                }
+            }
+            else {
+                throw new Exception("AddBccRecipient must be instance of EmailAddressType, string emailAddress, or array of email address (array(email, name))");
+            }
+        }
+    
+        /**
+         * @return array
+         */
+        public function getBcc(): array
         {
             return $this->bcc;
         }
     
         /**
-         * @param string $bcc
+         * @param array $bcc
+         *
+         * @throws Exception
          */
-        public function setBcc(?string $bcc): void
+        public function setBcc(array $bcc): void
         {
-            $this->bcc = $bcc;
+            if(is_array($bcc)) {
+                foreach ($bcc as $t) {
+                    if ($t instanceof \jamesiarmes\PhpEws\Type\EmailAddressType) {
+                        $this->bcc[] = $t;
+                    } else {
+                        throw new Exception("Could not set \"BCC\". Must be an array of EmailAddressType.");
+                    }
+                }
+            }
+            else {
+                throw new Exception("setBcc must be an array of EmailAddressType");
+            }
+        }
+    
+        /**
+         * @param string|array|\jamesiarmes\PhpEws\Type\EmailAddressType $email
+         * @param null|string                                            $name
+         *
+         * @throws Exception
+         */
+        public function addBccRecipient($email, $name = null) {
+            if($email instanceof \jamesiarmes\PhpEws\Type\EmailAddressType)
+                $this->bcc[] = $email;
+            elseif(is_string($email)) {
+                $To = new \jamesiarmes\PhpEws\Type\EmailAddressType();
+                $To->EmailAddress = $email;
+                $To->Name = ($name) ? $name : "";
+                $this->bcc[] = $To;
+            }
+            elseif (is_array($email)) {
+                foreach ($email as $e) {
+                    $To = new \jamesiarmes\PhpEws\Type\EmailAddressType();
+                    $To->EmailAddress = $e[0];
+                    $To->Name = ($e[1]) ? $e[1] : "";
+                    $this->bcc[] = $To;
+                }
+            }
+            else {
+                throw new Exception("AddBccRecipient must be instance of EmailAddressType, string emailAddress, or array of email address (array(email, name))");
+            }
         }
     
         /**
@@ -176,6 +319,48 @@
         {
             $this->body = $body;
         }
-       
-       
+    
+        /**
+         * @param string $file_path
+         *
+         *
+         * @since version
+         */
+        public function addAttachment(string $file_path) {
+           // Open file handlers.
+           $file = new SplFileObject($file_path);
+           $finfo = finfo_open();
+        
+           // Build the file attachment.
+           $attachment = new \jamesiarmes\PhpEws\Type\FileAttachmentType();
+           $attachment->Content = $file->openFile()->fread($file->getSize());
+           $attachment->Name = $file->getBasename();
+           $attachment->ContentType = finfo_file($finfo, $file_path);
+           
+           $this->attachments[] = $attachment;
+           
+        }
+    
+        /**
+         * @param string $raw
+         * @param string $file_name
+         * @param string $mime
+         *
+         *
+         * @since version
+         * @throws Exception
+         */
+        public function addStringAttachment(string $raw, string $file_name, string $mime = '') {
+            if(!$raw)
+                return;
+            if(!$file_name)
+                throw new Exception("No File name given for this string attachment.");
+            
+            $attachment = new \jamesiarmes\PhpEws\Type\FileAttachmentType();
+            $attachment->Content = $raw;
+            $attachment->Name = $file_name;
+            $attachment->ContentType = $mime;
+            
+            $this->attachments[] = $attachment;
+        }
     }
