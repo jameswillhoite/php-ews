@@ -57,7 +57,7 @@ class UserConfigurationDictionaryObjectTypesType extends Enumeration
      *
      * @var string
      */
-    const INTEGER_32 = 'Integer32';
+    CONST INTEGER_32 = 'Integer32';
 
     /**
      * Defines the object's type as a 64-bit integer.

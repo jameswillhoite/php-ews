@@ -31,12 +31,6 @@ namespace jamesiarmes\PhpEws;
  * @link https://www.testexchangeconnectivity.com/
  *
  * @package php-ews\AutoDiscovery
- *
- * @todo This class is quite large; it should be refactored into smaller
- * classes.
- * @SuppressWarnings(PHPMD.CyclomaticComplexity)
- * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
- * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 class Autodiscover
 {
@@ -231,11 +225,11 @@ class Autodiscover
     {
         $this->email = $email;
         $this->password = $password;
-
         if ($username === null) {
-            $username = $email;
+            $this->username = $email;
+        } else {
+            $this->username = $username;
         }
-        $this->username = $username;
 
         $this->setTLD();
     }
@@ -294,8 +288,6 @@ class Autodiscover
      * @param boolean $skip
      *   Whether or not to skip SSL certificate verification.
      * @return self
-     *
-     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
      */
     public function skipSSLVerification($skip = true)
     {
@@ -325,9 +317,9 @@ class Autodiscover
             $svbinary = '0' . $svbinary;
         }
 
-        $majorversion = (int) base_convert(substr($svbinary, 4, 6), 2, 10);
-        $minorversion = (int) base_convert(substr($svbinary, 10, 6), 2, 10);
-        $majorbuild = (int) base_convert(substr($svbinary, 17, 15), 2, 10);
+        $majorversion = base_convert(substr($svbinary, 4, 6), 2, 10);
+        $minorversion = base_convert(substr($svbinary, 10, 6), 2, 10);
+        $majorbuild = base_convert(substr($svbinary, 17, 15), 2, 10);
 
         switch ($majorversion) {
             case 8:
@@ -369,8 +361,10 @@ class Autodiscover
 
         // Pick out the host from the EXPR (Exchange RPC over HTTP).
         foreach ($this->discovered['Account']['Protocol'] as $protocol) {
-            if (($protocol['Type'] == 'EXCH' || $protocol['Type'] == 'EXPR')
-                && isset($protocol['ServerVersion'])) {
+            if (
+                ($protocol['Type'] == 'EXCH' || $protocol['Type'] == 'EXPR')
+                && isset($protocol['ServerVersion'])
+            ) {
                 if ($version === null) {
                     $sv = $this->parseServerVersion($protocol['ServerVersion']);
                     if ($sv !== false) {
@@ -474,8 +468,10 @@ class Autodiscover
         $this->last_curl_errno  = curl_errno($ch);
         $this->last_curl_error  = curl_error($ch);
 
-        if ($this->last_info['http_code'] == 302
-            || $this->last_info['http_code'] == 301) {
+        if (
+            $this->last_info['http_code'] == 302
+            || $this->last_info['http_code'] == 301
+        ) {
             if ($this->tryViaUrl($this->last_response_headers['location'])) {
                 return self::AUTODISCOVERED_VIA_UNAUTHENTICATED_GET;
             }
@@ -692,8 +688,6 @@ class Autodiscover
      * Return the generated Autodiscover XML request body.
      *
      * @return string
-     *
-     * @suppress PhanTypeMismatchArgumentInternal
      */
     public function getAutodiscoverRequest()
     {
@@ -734,9 +728,6 @@ class Autodiscover
      *   Header string to read.
      * @return integer
      *   Bytes read.
-     *
-     * @todo Determine if we can remove $_ch here.
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function readHeaders($_ch, $str)
     {
@@ -775,8 +766,6 @@ class Autodiscover
      * @return mixed
      *
      * @link https://github.com/gaarf/XML-string-to-PHP-array
-     *
-     * @suppress PhanTypeMismatchArgument, PhanUndeclaredProperty
      */
     protected function nodeToArray($node)
     {
@@ -789,15 +778,15 @@ class Autodiscover
             case XML_ELEMENT_NODE:
                 for ($i = 0, $m = $node->childNodes->length; $i < $m; $i++) {
                     $child = $node->childNodes->item($i);
-                    $value = $this->nodeToArray($child);
+                    $v = $this->nodeToArray($child);
                     if (isset($child->tagName)) {
-                        $tag = $child->tagName;
-                        if (!isset($output[$tag])) {
-                            $output[$tag] = array();
+                        $t = $child->tagName;
+                        if (!isset($output[$t])) {
+                            $output[$t] = array();
                         }
-                        $output[$tag][] = $value;
-                    } elseif ($value || $value === '0') {
-                        $output = (string) $value;
+                        $output[$t][] = $v;
+                    } elseif ($v || $v === '0') {
+                        $output = (string) $v;
                     }
                 }
 
@@ -810,15 +799,15 @@ class Autodiscover
 
                 if (is_array($output)) {
                     if ($node->attributes->length) {
-                        $attributes = array();
+                        $a = array();
                         foreach ($node->attributes as $attrName => $attrNode) {
-                            $attributes[$attrName] = (string) $attrNode->value;
+                            $a[$attrName] = (string) $attrNode->value;
                         }
-                        $output['@attributes'] = $attributes;
+                        $output['@attributes'] = $a;
                     }
-                    foreach ($output as $tag => $value) {
-                        if (is_array($value) && count($value) == 1 && $tag != '@attributes') {
-                            $output[$tag] = $value[0];
+                    foreach ($output as $t => $v) {
+                        if (is_array($v) && count($v) == 1 && $t != '@attributes') {
+                            $output[$t] = $v[0];
                         }
                     }
                 }
@@ -835,8 +824,7 @@ class Autodiscover
      *   Minor server version.
      * @return string Server version.
      */
-    protected function parseVersion2007($minorversion)
-    {
+    protected function parseVersion2007($minorversion) {
         switch ($minorversion) {
             case 0:
                 return Client::VERSION_2007;
@@ -856,8 +844,7 @@ class Autodiscover
      *   Minor server version.
      * @return string Server version.
      */
-    protected function parseVersion2010($minorversion)
-    {
+    protected function parseVersion2010($minorversion) {
         switch ($minorversion) {
             case 0:
                 return Client::VERSION_2010;
@@ -877,8 +864,7 @@ class Autodiscover
      *   Major build version.
      * @return string Server version.
      */
-    protected function parseVersion2013($majorbuild)
-    {
+    protected function parseVersion2013($majorbuild) {
         return ($majorbuild == 847
             ? Client::VERSION_2013_SP1
             : Client::VERSION_2013);
@@ -889,8 +875,7 @@ class Autodiscover
      *
      * @return string Server version.
      */
-    protected function parseVersion2016()
-    {
+    protected function parseVersion2016() {
         return Client::VERSION_2016;
     }
 

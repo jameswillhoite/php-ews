@@ -5,6 +5,8 @@
 
 namespace jamesiarmes\PhpEws\Enumeration;
 
+use \jamesiarmes\PhpEws\Enumeration;
+
 /**
  * Represents days of the week that are used in item recurrence patterns.
  *

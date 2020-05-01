@@ -33,4 +33,11 @@ class FileAttachmentType extends AttachmentType
      * @var boolean
      */
     public $IsContactPhoto;
+    
+    /**
+     * Contains the path to the file in the local directory
+     *
+     * @var string
+     */
+    public $Path;
 }

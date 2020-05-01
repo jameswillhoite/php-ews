@@ -28,8 +28,6 @@ class Enumeration extends Type
      * Returns the value of this enumeration as a string..
      *
      * @return string
-     *
-     * @suppress PhanDeprecatedProperty
      */
     public function __toString()
     {

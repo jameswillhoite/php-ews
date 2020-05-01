@@ -13,15 +13,6 @@ namespace jamesiarmes\PhpEws\Type;
 class EmailAddressType extends BaseEmailAddressType
 {
     /**
-     * Represents the e-mail address of the mailbox user.
-     *
-     * @since Exchnage 2007
-     *
-     * @var string
-     */
-    public $Address;
-
-    /**
      * The e-mail address that is represented.
      *
      * @since Exchange 2007

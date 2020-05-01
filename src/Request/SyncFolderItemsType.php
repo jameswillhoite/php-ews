@@ -82,7 +82,7 @@ class SyncFolderItemsType extends BaseRequestType
      *
      * @since Exchange 2007
      *
-     * @var string|null
+     * @var string
      */
     public $SyncState;
 }

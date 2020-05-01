@@ -5,6 +5,8 @@
 
 namespace jamesiarmes\PhpEws\Request;
 
+use \jamesiarmes\PhpEws\Request;
+
 /**
  * Defines a request to convert item and folder identifiers between supported
  * Exchange formats.

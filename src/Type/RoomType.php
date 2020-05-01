@@ -5,6 +5,8 @@
 
 namespace jamesiarmes\PhpEws\Type;
 
+use \jamesiarmes\PhpEws\Type;
+
 /**
  * Represents a meeting room.
  *

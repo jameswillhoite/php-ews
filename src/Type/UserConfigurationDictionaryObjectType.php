@@ -26,7 +26,7 @@ class UserConfigurationDictionaryObjectType extends Type
     public $Type;
 
     /**
-     * Specifies the dictionary object value as a string.
+     * Specifies the dictionary object value as a string.ß
      *
      * @since Exchange 2010
      *

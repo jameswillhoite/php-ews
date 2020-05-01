@@ -28,7 +28,7 @@ class FileAsMappingType extends Enumeration
      *
      * @since Exchange 2007
      *
-     * @var string
+     * @var
      */
     const COMPANY_LAST_COMMA_FIRST = 'CompanyLastCommaFirst';
 

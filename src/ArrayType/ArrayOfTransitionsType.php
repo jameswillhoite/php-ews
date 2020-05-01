@@ -31,7 +31,7 @@ class ArrayOfTransitionsType extends ArrayType
      *
      * @var string
      */
-    public $Id;
+    public $Id = array();
 
     /**
      * A time zone transition that occurs on a specified day of the year.

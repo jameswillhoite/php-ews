@@ -1,60 +1,5 @@
-# My Own version of jamesiarmes php-ews
-
-I have taken Jamesiarmes php-ews and created a couple classes to help simplify creating, deleteing, and sending messages
-via exchange.
-
-## Inital Setup
-Please make sure to update the server, username and password in the ExchangeMaster.php file in the src directory
-```php
-private $mailServer = "change_me";
-protected $fromUsername = "change_me";
-private $fromPassword = "change_me";
-protected $temp_dir = '/path/to/temp/dir/to/save/attachments/';
-```
-
-## Examples
-
-### Send Email
-```php
-$Exchage = new Mailbox();
-
-//Create the Message
-$Message = $Exchange->createMessage();
-
-$Message->addReceipent("john.smith@js.com", "John Smith");
-$Message->setSubject("Hello John Smith");
-$Message->setBody("You have an awsome body!");
-$Message->addCcReceipent("jane.smith@js.com", "Jane Smith");
-$Message->addAttachment("/Users/joe/Documents/bod.jpg");
-
-//Send the email
-$Exchange->sendMessage($Message);
-
-```
-
-### Get Inbox
-```php
-$Exchange = new Mailbox();
-//Set the Date range to be 4/1/2019 through 4/2/2019
-$Exchange->changeDateRange(new DateTime("4/1/2019 00:00:00"), new DateTime("4/2/2019 11:59:59"));
-//Only get Unread Messages
-$Exchange->showUnreadOnly(true);
-//Get messages
-$Exchange->getMailbox();
-foreach($Exchange->messages as $Message) {
-  //Use $Message getters to display ... ie: $Message->getFrom()->EmailAddress
-  
-  /*
-    Seperate call to get the attachments for the message. Saves time and cleanup for 
-    unwanted attachments
-  */
-  $Exchange->getAttachments($Message);
-  $Message->getAttachments() //Will return array of attachments
-}
-
-```
-
-
+# Notice
+This is just an extension of James Aries Php-Ews found [Here][4]. He did a really great job at putting all this together, I just wanted to provide other developers a easier time getting all this to work.
 
 # PHP Exchange Web Services
 
@@ -64,12 +9,9 @@ easier. It handles the NTLM authentication required to use the SOAP
 services and provides an object-oriented interface to the complex types
 required to form a request.
 
-[![Scrutinizer](https://img.shields.io/scrutinizer/g/jamesiarmes/php-ews.svg?style=flat-square)][1]
-[![Total Downloads](https://img.shields.io/packagist/dt/php-ews/php-ews.svg?style=flat-square)][2]
 
 ## Dependencies
 
-* Composer
 * PHP 5.4 or greater
 * cURL with NTLM support (7.30.0+ recommended)
 * Exchange 2007 or later
@@ -79,49 +21,39 @@ Exchange.**
 
 ## Installation
 
-The prefered installation method is via Composer, which will automatically
-handle autoloading of classes.
-
-```json
-{
-    "require": {
-        "php-ews/php-ews": "~1.0"
-    }
-}
-```
+Edit the ExchangeMaster class found in the main src folder. 
+1) Add your Exchange Server host
+2) Add the Username
+3) Add the Password
+4) Add the default temp folder to hold any attachments downloaded from the Exchange Server.
+5) Add the default folder to hold Error Logs.
 
 ## Usage
 
 The library can be used to make several different request types. In order to
-make a request, you need to instantiate a new `\jamesiarmes\PhpEws\Client`
+make a request, you need to instantiate a new `\jamesiarmes\PhpEws\Mailbox\Mailbox`
 object:
 
 ```php
-use \jamesiarmes\PhpEws\Client;
+use \jamesiarmes\PhpEws\Mailbox\Mailbox;
 
-$ews = new Client($server, $username, $password, $version);
+$ews = new Mailbox("username", "password");
 ```
 
-The `Client` class takes four parameters for its constructor:
+The `Mailbox` class takes two parameters for its constructor:
 
-* `$server`: The url to the exchange server you wish to connect to, without
-  the protocol. Example: mail.example.com. If you have trouble determining the
-  correct url, you could try using [autodiscovery][3].
 * `$username`: The user to connect to the server with. This is usually the
   local portion of the users email address. Example: "user" if the email address
   is "user@example.com".
 * `$password`: The user's plain-text password.
-* `$version` (optional): The version of the Exchange sever to connect to. Valid
-  values can be found at `\jamesiarmes\PhpEws\Client::VERSION_*`. Defaults to
-  Exchange 2007.
 
-Once you have your `\jamesiarmes\PhpEws\Client` object, you need to build your
-request object. The type of object depends on the operation you are calling. If
-you are using an IDE with code completion it should be able to help you
-determine the correct classes to use using the provided docblocks.
+The `Mailbox` object is what talks with the Exchange Server. 
+You can get all the messages from the mailbox with the method `getMailbox()`. 
+This will return an array of `MessageType` objects. You can pass `true` to the `getMailbox` method to return the `MessageType` array with the Message Body and the Email Addresses of each Message.
 
-The request objects are build similar to the XML body of the request. See the
-resources section below for more information on building the requests.
+To Send an Email, create a new `ExchangeMessage` object. (There is a method in the Mailbox called `createMessage` that will return a new `ExchangeMessage` object).
+Pass that `ExchangeMessage` object to the Mailbox `sendMessage` method which will send the message to the Recipient.
+
 
 ## Examples
 
@@ -135,7 +67,7 @@ used in the request.
 
 * [php-ews Website][4]
 * [Exchange 2007 Web Services Reference][5]
-* [Exchange 2010 Web Services Reference][4]
+* [Exchange 2010 Web Services Reference][6]
 * [Exchange 2013 Web Services Reference][7]
 
 ## Support
@@ -144,11 +76,8 @@ All questions should use the [issue queue][8]. This allows the community to
 contribute to and benefit from questions or issues you may have. Any support
 requests received via email will be directed here.
 
-[1]: https://scrutinizer-ci.com/g/jamesiarmes/php-ews
-[2]: https://packagist.org/packages/php-ews/php-ews
-[3]: https://github.com/jamesiarmes/php-ews/tree/master/examples/autodiscover
 [4]: http://www.jamesarmes.com/php-ews/
 [5]: http://msdn.microsoft.com/library/bb204119\(v=EXCHG.80\).aspx
 [6]: http://msdn.microsoft.com/library/bb204119\(v=exchg.140\).aspx
 [7]: http://msdn.microsoft.com/library/bb204119\(v=exchg.150\).aspx
-[8]: https://github.com/jamesiarmes/php-ews/issues
+[8]: https://github.com/jameswillhoite/php-ews/issues

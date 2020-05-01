@@ -5,6 +5,8 @@
 
 namespace jamesiarmes\PhpEws\Type;
 
+use \jamesiarmes\PhpEws\Type;
+
 /**
  * Represents service configuration information for the mail tips service.
  *
